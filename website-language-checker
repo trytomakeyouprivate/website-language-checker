@@ -1,34 +1,40 @@
 #!/bin/bash
 # Website translation checker
 
+# Custom List of languages
 langlist=("ar" "ast" "az" "be" "be@latin" "bg" "bs" "ca" "ca@valencia" "cs" "cy" "de" "eo" "es" "et" "eu" "fi" "fr" "ia" "id" "ie" "is" "it" "ka" "ko" "my" "nl" "nn" "pa" "pl" "pt" "pt_BR" "ro" "ru" "sl" "sv" "tr" "uk" "vi" "x-test" "zh_CN" "zh_TW")
 
+# Set output path as path where the user launches the script
 path=$PWD
 
+# Let user enter the fields
 read -p "Enter a website name (no https://): > " site
 read -p "Enter a .desktop Name: > " desk
 
+# Check if the site is available
+orig_url="https://$site"
+orig_response=$(curl --head --silent --output /dev/null --write-out '%{http_code}' "$orig_url")
+
+if [ "$orig_response" != "200" ] && [ "$orig_response" != "301" ]; then
+  echo "Error: The site $site is not available."
+  exit 1
+fi
+
+# Loop through the language list
 for lang in "${langlist[@]}"
 do
-  url="https://$lang.$site"
-  response=$(curl --head --silent --output /dev/null --write-out '%{http_code}' "$url")
+  # Construct the URL with the language code
+  lang_url="https://$lang.$site"
+  lang_response=$(curl --head --silent --output /dev/null --write-out '%{http_code}' "$lang_url")
 
-  if [ "$response" -eq 200 ]; then
+  # Check if the language-specific site is available
+  if [ "$lang_response" = "200" ] ; then
     echo "$lang: yes"
-    echo "Query[$lang]=$url" >> "$path/$desk.desktop"
+    echo "Query[$lang]=$lang_url" >> "$path/$desk.desktop"
   else
     echo "$lang: no"
+    echo "Query[$lang]=$orig_url" >> "$path/$desk.desktop"
   fi
 done
-
-# Check the original site
-url="https://$site"
-response=$(curl --head --silent --output /dev/null --write-out '%{http_code}' "$url")
-
-if [ "$response" -eq 200 ]; then
-  break
-else
-  echo "Query[$lang]=$url" >> "$path/$desk.desktop"
-fi
 
 xdg-open "$path/$desk.desktop"
