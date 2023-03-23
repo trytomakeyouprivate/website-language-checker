@@ -12,3 +12,7 @@ chmod +x ~/.local/bin/website-language-checker
 Output:
 
 ![Output](https://github.com/trytomakeyouprivate/website-language-checker/blob/main/images/output.png)
+
+Result:
+
+![File](https://github.com/trytomakeyouprivate/website-language-checker/blob/main/images/file.png)
