@@ -1,0 +1,34 @@
+#!/bin/bash
+# Website translation checker
+
+langlist=("ar" "ast" "az" "be" "be@latin" "bg" "bs" "ca" "ca@valencia" "cs" "cy" "de" "eo" "es" "et" "eu" "fi" "fr" "ia" "id" "ie" "is" "it" "ka" "ko" "my" "nl" "nn" "pa" "pl" "pt" "pt_BR" "ro" "ru" "sl" "sv" "tr" "uk" "vi" "x-test" "zh_CN" "zh_TW")
+
+path=$PWD
+
+read -p "Enter a website name (no https://): > " site
+read -p "Enter a .desktop Name: > " desk
+
+for lang in "${langlist[@]}"
+do
+  url="https://$lang.$site"
+  response=$(curl --head --silent --output /dev/null --write-out '%{http_code}' "$url")
+
+  if [ "$response" -eq 200 ]; then
+    echo "$lang: yes"
+    echo "Query[$lang]=$url" >> "$path/$desk.desktop"
+  else
+    echo "$lang: no"
+  fi
+done
+
+# Check the original site
+url="https://$site"
+response=$(curl --head --silent --output /dev/null --write-out '%{http_code}' "$url")
+
+if [ "$response" -eq 200 ]; then
+  break
+else
+  echo "Query[$lang]=$url" >> "$path/$desk.desktop"
+fi
+
+xdg-open "$path/$desk.desktop"
