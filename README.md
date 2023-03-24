@@ -5,7 +5,7 @@ A bash script iterating through a list of language shortcuts, for use in KDE Des
 Install
 
 ```
-wget -O ~/.local/bin https://github.com/trytomakeyouprivate/website-language-checker/raw/main/website-language-checker
+wget https://github.com/trytomakeyouprivate/website-language-checker/raw/main/website-language-checker -P ~/.local/bin
 chmod +x ~/.local/bin/website-language-checker
 ```
 
